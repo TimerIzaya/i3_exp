@@ -4,7 +4,9 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 
-ROOT = Path(__file__).resolve().parent
+# 脚本现在放在 rq_osv/analysis/cov/ 下，这里把日志根目录指回 rq_osv/
+SCRIPT_DIR = Path(__file__).resolve().parent
+LOG_ROOT = Path(__file__).resolve().parents[2]
 
 TIME_RE = re.compile(r"Elapsed Time\s*:\s*(\d+)h\s*(\d+)m\s*(\d+)s")
 COV_RE = re.compile(r"Coverage\s*:\s*([0-9.]+)%")
@@ -65,7 +67,7 @@ def series_color(dir_name: str):
 
 def main():
     series = []
-    for subdir in sorted(p for p in ROOT.iterdir() if p.is_dir()):
+    for subdir in sorted(p for p in LOG_ROOT.iterdir() if p.is_dir()):
         log_path = subdir / "fuzz_log.txt"
         if not log_path.exists():
             continue
@@ -98,7 +100,8 @@ def main():
     plt.legend()
     plt.tight_layout()
 
-    out_path = ROOT / "coverage_plot.png"
+    # 输出放在脚本同目录（analysis/cov）
+    out_path = SCRIPT_DIR / "coverage_plot.png"
     plt.savefig(out_path, dpi=150)
     print(f"Saved: {out_path}")
 
